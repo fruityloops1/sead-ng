@@ -15,31 +15,27 @@
 #include <prim/seadSafeString.h>
 #include <thread/seadCriticalSection.h>
 
-namespace sead
-{
+namespace sead {
 class Thread;
 class WriteStream;
 
-namespace hostio
-{
-class Context;
-class PropertyEvent;
-}  // namespace hostio
+namespace hostio {
+    class Context;
+    class PropertyEvent;
+} // namespace hostio
 
-class Heap : public IDisposer, public INamable, public hostio::Reflexible
-{
+class Heap : public IDisposer, public INamable, public hostio::Reflexible {
 public:
     SEAD_ENUM(Flag, cEnableLock, cDisposing, cEnableWarning, cEnableDebugFillSystem,
-              cEnableDebugFillUser)
+        cEnableDebugFillUser)
 
-    enum HeapDirection
-    {
+    enum HeapDirection {
         cHeapDirection_Forward = 1,
         cHeapDirection_Reverse = -1
     };
 
     Heap(const SafeString& name, Heap* parent, void* address, size_t size, HeapDirection direction,
-         bool);
+        bool);
     ~Heap() override;
 
     SEAD_RTTI_BASE(Heap)
@@ -47,6 +43,7 @@ public:
     virtual void destroy() = 0;
     virtual size_t adjust() = 0;
     virtual void* tryAlloc(size_t size, s32 alignment) = 0;
+    virtual void v7();
     virtual void free(void* ptr) = 0;
     virtual void* resizeFront(void*, size_t) = 0;
     virtual void* resizeBack(void*, size_t) = 0;
@@ -63,7 +60,7 @@ public:
     virtual bool isResizable() const = 0;
     virtual bool isAdjustable() const = 0;
 
-    virtual void dump() const {}
+    virtual void dump() const { }
     virtual void dumpYAML(WriteStream& stream, int) const;
     void dumpTreeYAML(WriteStream& stream, int) const;
 
@@ -84,8 +81,8 @@ public:
     {
         void* ptr = tryAlloc(size, alignment);
         SEAD_ASSERT_MSG(ptr,
-                        "alloc failed. size: %zu, allocatable size: %zu, alignment: %d, heap: %s",
-                        size, getMaxAllocatableSize(alignment), alignment, getName().cstr());
+            "alloc failed. size: %zu, allocatable size: %zu, alignment: %d, heap: %s",
+            size, getMaxAllocatableSize(alignment), alignment, getName().cstr());
         return ptr;
     }
 
@@ -107,7 +104,7 @@ public:
     void* mStart;
     size_t mSize;
     Heap* mParent;
-    HeapList mChildren;
+    HeapList mChildren; // 0x40
     ListNode mListNode;
     DisposerList mDisposerList;
     HeapDirection mDirection;
@@ -125,6 +122,6 @@ inline void* Heap::tryRealloc(void*, size_t, s32)
     return nullptr;
 }
 
-}  // namespace sead
+} // namespace sead
 
-#endif  // SEAD_HEAP_H_
+#endif // SEAD_HEAP_H_
