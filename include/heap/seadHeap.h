@@ -43,8 +43,8 @@ public:
     virtual void destroy() = 0;
     virtual size_t adjust() = 0;
     virtual void* tryAlloc(size_t size, s32 alignment) = 0;
-    virtual void v7();
     virtual void free(void* ptr) = 0;
+    virtual size_t freeAndGetAllocatableSize(void* ptr, s32) = 0;
     virtual void* resizeFront(void*, size_t) = 0;
     virtual void* resizeBack(void*, size_t) = 0;
     virtual void* tryRealloc(void* ptr, size_t size, s32 alignment);
