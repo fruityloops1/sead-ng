@@ -97,7 +97,7 @@ protected:
 
     virtual void run_();
     virtual void calc_(MessageQueue::Element msg) = 0;
-    virtual uintptr_t getStackCheckStartAddress_() const;
+    virtual void getFiber() const;
 
     void initStackCheck_();
     void initStackCheckWithCurrentStackPointer_();
