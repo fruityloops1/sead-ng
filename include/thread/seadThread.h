@@ -72,8 +72,6 @@ public:
     void checkStackPointerOverFlow(const char* source_file, s32 source_line) const;
     void setStackOverflowExceptionEnable(bool);
 
-    ThreadListNode* getThreadListNode() { return &mListNode; }
-
 #ifdef SEAD_DEBUG
     void listenPropertyEvent(const hostio::PropertyEvent* event) override;
     void genMessage(hostio::Context* context) override;
@@ -108,7 +106,6 @@ protected:
 
     MessageQueue mMessageQueue;
     s32 mStackSize = 0;
-    ThreadListNode mListNode;
     Heap* mCurrentHeap = nullptr;
     FindContainHeapCache mFindContainHeapCache;
     MessageQueue::BlockType mBlockType = MessageQueue::BlockType::Blocking;
@@ -168,18 +165,6 @@ public:
 
 protected:
     friend class Thread;
-
-    void addThread_(Thread* thread)
-    {
-        // ScopedLock<CriticalSection> lock(getListCS());
-        mList.pushBack(thread->getThreadListNode());
-    }
-
-    void removeThread_(Thread* thread)
-    {
-        // ScopedLock<CriticalSection> lock(getListCS());
-        mList.erase(thread->getThreadListNode());
-    }
 
     void initMainThread_(Heap* heap);
     void destroyMainThread_();
