@@ -20,19 +20,21 @@
 #include <thread/seadThreadLocalStorage.h>
 #include <time/seadTickSpan.h>
 
-namespace sead {
+namespace sead
+{
 class Heap;
 class Thread;
 
 using ThreadList = TList<Thread*>;
 using ThreadListNode = TListNode<Thread*>;
 
-class Thread : public IDisposer, public INamable, public hostio::Reflexible {
+class Thread : public IDisposer, public INamable, public hostio::Reflexible
+{
 public:
     SEAD_ENUM(State, cInitialized, cRunning, cQuitting, cTerminated, cReleased)
 
     Thread(const SafeString& name, Heap* heap, s32 priority, MessageQueue::BlockType block_type,
-        MessageQueue::Element quit_msg, s32 stack_size, s32 message_queue_size);
+           MessageQueue::Element quit_msg, s32 stack_size, s32 message_queue_size);
     ~Thread() override;
 
     Thread(const Thread&) = delete;
@@ -77,10 +79,7 @@ public:
     void genMessage(hostio::Context* context) override;
 #endif
 
-    bool isDefaultPriority() const
-    {
-        return getPriority() == cDefaultPriority;
-    }
+    bool isDefaultPriority() const { return getPriority() == cDefaultPriority; }
 
     Heap* getCurrentHeap() const { return mCurrentHeap; }
     Heap* setCurrentHeap(Heap* heap) { return std::exchange(mCurrentHeap, heap); }
@@ -112,7 +111,7 @@ protected:
     MessageQueue::Element mQuitMsg = 0;
     u32 mId = 0;
     State mState = State::cInitialized;
-    CoreIdMask mAffinity { CoreId::cMain };
+    CoreIdMask mAffinity{CoreId::cMain};
 #ifdef NNSDK
     nn::os::ThreadType* mThreadInner = nullptr;
 #endif
@@ -121,7 +120,8 @@ protected:
     s32 mPriority = 0;
 };
 
-class ThreadMgr : public hostio::Node {
+class ThreadMgr : public hostio::Node
+{
     SEAD_SINGLETON_DISPOSER(ThreadMgr)
 public:
     ThreadMgr();
@@ -148,7 +148,8 @@ public:
         const auto end = mList.end();
         // ScopedLock<CriticalSection> lock(getListCS());
         bool found = false;
-        for (auto it = mList.begin(); it != end; ++it) {
+        for (auto it = mList.begin(); it != end; ++it)
+        {
             bool result = !(*it)->getFindContainHeapCache()->tryRemoveHeap(heap);
             found |= result;
             if (result)
@@ -170,13 +171,14 @@ protected:
     void destroyMainThread_();
     static u32 getCurrentThreadID_();
 
-private:
+public:
     ThreadList mList;
     Thread* mMainThread = nullptr;
     ThreadLocalStorage mThreadPtrTLS;
 };
 
-class MainThread : public Thread {
+class MainThread : public Thread
+{
 public:
 #ifdef NNSDK
     MainThread(Heap* heap, nn::os::ThreadType* nn_thread, u32 thread_id)
@@ -184,10 +186,7 @@ public:
     {
     }
 #endif
-    ~MainThread() override
-    {
-        mState = State::cTerminated;
-    }
+    ~MainThread() override { mState = State::cTerminated; }
 
     void destroy() override { SEAD_ASSERT_MSG(false, "Main thread can not destroy"); }
     void quit(bool) override { SEAD_ASSERT_MSG(false, "Main thread can not quit"); }
@@ -199,6 +198,6 @@ public:
     void setPriority(s32) override { SEAD_ASSERT_MSG(false, "Main thread can not set priority"); }
 
 protected:
-    void calc_(MessageQueue::Element) override { }
+    void calc_(MessageQueue::Element) override {}
 };
-} // namespace sead
+}  // namespace sead
