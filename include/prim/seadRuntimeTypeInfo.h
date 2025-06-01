@@ -99,10 +99,10 @@ public:                                                                         
         return typeInfo == clsTypeInfo;                                                            \
     }                                                                                              \
                                                                                                    \
-    virtual bool checkDerivedRuntimeTypeInfo(const sead::RuntimeTypeInfo::Interface* typeInfo)     \
-        const                                                                                      \
+    virtual const CLASS* checkDerivedRuntimeTypeInfo(                                              \
+        const sead::RuntimeTypeInfo::Interface* typeInfo) const                                    \
     {                                                                                              \
-        return checkDerivedRuntimeTypeInfoStatic(typeInfo);                                        \
+        return checkDerivedRuntimeTypeInfoStatic(typeInfo) ? this : nullptr;                       \
     }                                                                                              \
                                                                                                    \
     virtual const sead::RuntimeTypeInfo::Interface* getRuntimeTypeInfo() const                     \
@@ -128,10 +128,10 @@ public:                                                                         
         return BASE::checkDerivedRuntimeTypeInfoStatic(typeInfo);                                  \
     }                                                                                              \
                                                                                                    \
-    bool checkDerivedRuntimeTypeInfo(const sead::RuntimeTypeInfo::Interface* typeInfo)             \
+    const CLASS* checkDerivedRuntimeTypeInfo(const sead::RuntimeTypeInfo::Interface* typeInfo)     \
         const override                                                                             \
     {                                                                                              \
-        return checkDerivedRuntimeTypeInfoStatic(typeInfo);                                        \
+        return checkDerivedRuntimeTypeInfoStatic(typeInfo) ? this : nullptr;                       \
     }                                                                                              \
                                                                                                    \
     const sead::RuntimeTypeInfo::Interface* getRuntimeTypeInfo() const override                    \
